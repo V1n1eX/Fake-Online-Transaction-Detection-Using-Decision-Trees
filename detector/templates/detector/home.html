@@ -1,0 +1,62 @@
+{% extends 'detector/base.html' %}
+
+{% block title %}Project Dashboard{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-grid">
+        <div class="card">
+            <div class="badge">Fraud Detection System</div>
+            <h1>Fake Online Transaction Detection Using Random Forest</h1>
+            <p class="lead">
+                This system evaluates online transactions, identifies suspicious behavioural patterns, and flags potentially fraudulent activity
+                using an ensemble machine-learning approach designed for financial risk monitoring.
+            </p>
+            <div class="button-row">
+                <a href="{% url 'predict' %}" class="btn">Run Risk Assessment</a>
+                <a href="https://github.com/V1n1eX/Fake-Online-Transaction-Detection-Using-Decision-Trees" class="btn secondary" target="_blank" rel="noreferrer">View Repository</a>
+            </div>
+        </div>
+
+        <div class="card info-panel">
+            <h3>Project Profile</h3>
+            <p><strong>Student:</strong> Vincent Kondowe</p>
+            <p><strong>Registration Number:</strong> 23311351014</p>
+            <p><strong>Project Serial Number:</strong> 7</p>
+            <p><strong>Model Focus:</strong> Detect suspicious online transactions before they become costly fraud events.</p>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>System Overview</h2>
+    <p class="lead">
+        Digital payment systems are exposed to evolving fraud patterns. This project explores how a Random Forest model can learn from transaction
+        signals such as amount, merchant risk, device reputation, and user behaviour to classify transactions as either legitimate or fraudulent.
+    </p>
+
+    <div class="metric-list">
+        <div class="metric">
+            <span>Model Type</span>
+            <strong>Random Forest</strong>
+        </div>
+        <div class="metric">
+            <span>Use Case</span>
+            <strong>Fraud Prevention</strong>
+        </div>
+        <div class="metric">
+            <span>Decision Output</span>
+            <strong>Legitimate / Fraudulent</strong>
+        </div>
+        <div class="metric">
+            <span>Platform</span>
+            <strong>Django + Scikit-learn</strong>
+        </div>
+    </div>
+
+    <div class="button-row">
+        <a href="{% url 'about' %}" class="btn secondary">Project Information</a>
+        <a href="{% url 'result' %}" class="btn warning">View Model Results</a>
+    </div>
+</section>
+{% endblock %}

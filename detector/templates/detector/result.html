@@ -1,0 +1,44 @@
+{% extends 'detector/base.html' %}
+
+{% block title %}Prediction Result{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Risk Assessment Result</h1>
+
+    {% if prediction %}
+        <div class="result-box">
+            <h2>
+                {% if prediction == 'Fraudulent' %}
+                    Fraudulent Transaction Detected
+                {% else %}
+                    Transaction Appears Legitimate
+                {% endif %}
+            </h2>
+            <p><strong>Decision:</strong> {{ prediction }}</p>
+            <p><strong>Fraud Probability:</strong> {{ risk_score|floatformat:4 }}</p>
+        </div>
+    {% else %}
+        <div class="alert">
+            No prediction has been generated yet. Please submit a transaction from the risk assessment form.
+        </div>
+    {% endif %}
+
+    {% if payload %}
+        <h3>Submitted Transaction Indicators</h3>
+        <div class="metric-list">
+            {% for key, value in payload.items %}
+                <div class="metric">
+                    <span>{{ key|title }}</span>
+                    <strong>{{ value }}</strong>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="button-row">
+        <a href="{% url 'predict' %}" class="btn">Run Another Check</a>
+        <a href="{% url 'home' %}" class="btn secondary">Return to Dashboard</a>
+    </div>
+</section>
+{% endblock %}

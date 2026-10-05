@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fake Transaction Detector{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'detector/css/styles.css' %}">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="container nav-inner">
+            <div class="brand">Fake Transaction Detector</div>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">Dashboard</a>
+                <a href="{% url 'predict' %}">Predict</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'result' %}">Results</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            Student project: Vincent Kondowe | Registration: 23311351014
+        </div>
+    </footer>
+
+    <script src="{% static 'detector/js/script.js' %}" defer></script>
+</body>
+</html>

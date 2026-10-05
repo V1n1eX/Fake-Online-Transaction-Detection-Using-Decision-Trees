@@ -1,0 +1,62 @@
+{% extends 'detector/base.html' %}
+
+{% block title %}About the Project{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>About the Project</h1>
+    <div class="about-grid">
+        <div>
+            <h3>Project Objective</h3>
+            <p>
+                The main objective of this project is to classify online transactions as either legitimate or potentially fraudulent.
+                By using machine learning, the system supports early detection of suspicious activity and reduces the risk of financial loss.
+            </p>
+
+            <h3>Problem Being Solved</h3>
+            <p>
+                Fraudulent digital transactions are often subtle, high-speed, and difficult to detect using fixed rules alone. This project demonstrates
+                a data-driven fraud detection approach that learns patterns from transaction behaviour and risk indicators.
+            </p>
+        </div>
+
+        <div>
+            <h3>Random Forest Approach</h3>
+            <p>
+                A Random Forest model is used because it handles noisy data well, captures nonlinear relationships, and provides stronger predictive
+                robustness than a single decision tree. It is an appropriate ensemble method for transaction-risk classification in an academic ML project.
+            </p>
+
+            <h3>Dataset</h3>
+            <p>
+                The application is prepared for a real financial transaction dataset that can later be integrated for training and evaluation. The current transaction
+                form represents the feature structure used in a realistic online-fraud detection pipeline.
+            </p>
+        </div>
+    </div>
+
+    <div class="metric-list">
+        <div class="metric">
+            <span>Evaluation Metrics</span>
+            <strong>Accuracy, Precision, Recall, F1-score</strong>
+        </div>
+        <div class="metric">
+            <span>Primary Goal</span>
+            <strong>Reduce missed fraud cases</strong>
+        </div>
+        <div class="metric">
+            <span>Output</span>
+            <strong>Fraudulent / Legitimate</strong>
+        </div>
+        <div class="metric">
+            <span>Known Limitation</span>
+            <strong>Performance depends on data quality</strong>
+        </div>
+    </div>
+
+    <p class="lead">
+        This application is structured as a realistic academic prototype for a future final model pipeline. Once the final dataset is selected, the same
+        interface can be connected to a trained Random Forest classifier and evaluated with proper validation metrics.
+    </p>
+</section>
+{% endblock %}

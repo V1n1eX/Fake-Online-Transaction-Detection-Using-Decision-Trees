@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+.env
+
+*.sqlite3
+/staticfiles/
+
+# Trained model artifacts can be large and should be managed deliberately.
+models/*.pkl
+models/*.joblib
+
+.ipynb_checkpoints/

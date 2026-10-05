@@ -1,0 +1,60 @@
+{% extends 'detector/base.html' %}
+
+{% block title %}Transaction Risk Assessment{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Transaction Risk Assessment</h1>
+    <p class="lead">
+        Enter the transaction indicators used by the fraud-detection model. This form is designed to mirror a real-world monitoring workflow for online payment risk analysis.
+    </p>
+
+    {% if error %}
+        <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+            <div>
+                <label class="label" for="amount">Transaction Amount</label>
+                <input type="number" id="amount" name="amount" step="0.01" value="125.50" required>
+            </div>
+            <div>
+                <label class="label" for="transaction_hour">Transaction Hour</label>
+                <input type="number" id="transaction_hour" name="transaction_hour" min="0" max="23" value="22" required>
+            </div>
+            <div>
+                <label class="label" for="merchant_risk">Merchant Risk Score</label>
+                <input type="number" id="merchant_risk" name="merchant_risk" step="0.01" value="0.72" required>
+            </div>
+            <div>
+                <label class="label" for="device_risk">Device Risk Score</label>
+                <input type="number" id="device_risk" name="device_risk" step="0.01" value="0.34" required>
+            </div>
+            <div>
+                <label class="label" for="location_risk">Location Risk Score</label>
+                <input type="number" id="location_risk" name="location_risk" step="0.01" value="0.68" required>
+            </div>
+            <div>
+                <label class="label" for="customer_tenure_days">Customer Tenure (days)</label>
+                <input type="number" id="customer_tenure_days" name="customer_tenure_days" value="215" required>
+            </div>
+            <div>
+                <label class="label" for="avg_transaction_amount">Average Transaction Amount</label>
+                <input type="number" id="avg_transaction_amount" name="avg_transaction_amount" step="0.01" value="90.00" required>
+            </div>
+            <div>
+                <label class="label" for="ip_risk">IP Risk Score</label>
+                <input type="number" id="ip_risk" name="ip_risk" step="0.01" value="0.58" required>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Run Fraud Check</button>
+            <button type="button" class="btn secondary" id="load-sample">Load Sample Profile</button>
+            <a href="{% url 'home' %}" class="btn warning">Back to Dashboard</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
