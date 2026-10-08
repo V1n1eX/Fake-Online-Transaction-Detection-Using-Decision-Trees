@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Technical project overview for Fake Online Transactions Using Decision Trees."
+    />
+    <title>Project Overview | Fake Online Transactions Using Decision Trees</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="./index.html">FOTDT</a>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="./index.html">Home</a>
+          <a href="./project.html" class="active">Project</a>
+          <a href="./resources.html">Resources</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section page-section">
+      <div class="container">
+        <div class="page-intro">
+          <p class="eyebrow">Project overview</p>
+          <h1>Fake Online Transactions Using Decision Trees</h1>
+        </div>
+
+        <div class="content-stack">
+          <article class="panel">
+            <h2>1. Project Overview</h2>
+            <p>
+              This project studies online transaction fraud by training a machine learning model to
+              separate normal users’ financial activity from suspicious behavior. The repository
+              contains a Django web application and a trained Random Forest model that serves as an
+              academic demonstration of fraud detection using transaction features.
+            </p>
+          </article>
+
+          <article class="panel">
+            <h2>2. Problem Statement</h2>
+            <p>
+              Fraudulent online transactions can appear similar to legitimate payments, making the
+              task difficult for rule-based systems alone. The project addresses this challenge by
+              learning patterns from transaction histories and producing automated classifications.
+            </p>
+          </article>
+
+          <article class="panel">
+            <h2>3. Objectives</h2>
+            <ul class="check-list">
+              <li>Analyze transaction features that may indicate suspicious behavior.</li>
+              <li>Prepare the dataset for model training and evaluation.</li>
+              <li>Train and validate a fraud detection model.</li>
+              <li>Build a simple Django interface for transaction screening.</li>
+              <li>Present the work in a professional project portfolio.</li>
+            </ul>
+          </article>
+
+          <article class="panel">
+            <h2>4. Dataset</h2>
+            <p>
+              The project uses the dataset stored in <strong>dataset/onlinefraud.csv</strong>. The
+              repository metadata shows the dataset includes <strong>76,927 total rows</strong>,
+              with <strong>107 fraud cases</strong> and <strong>76,819 legitimate cases</strong>.
+            </p>
+            <p>
+              The dataset is highly imbalanced, and the project notes this clearly in the README and
+              model evaluation files rather than presenting misleading results.
+            </p>
+          </article>
+
+          <article class="panel">
+            <h2>5. Data Preprocessing</h2>
+            <p>
+              The project prepares the data by dropping rows with missing target labels, separating
+              numeric and categorical variables, imputing missing values, and converting categorical
+              fields into a format the model can process.
+            </p>
+            <p>
+              This pipeline is implemented in the project’s machine learning module and keeps the
+              preprocessing and model logic consistent for training and prediction.
+            </p>
+          </article>
+
+          <article class="panel">
+            <h2>6. Decision Tree Algorithm</h2>
+            <p>
+              The core model is a <strong>Random Forest classifier</strong>, which is an ensemble of
+              decision trees. This model is well suited for classification problems where patterns are
+              non-linear and relationships between features are complex.
+            </p>
+            <p>
+              Random Forest was selected because it can handle transaction data, work with mixed
+              feature types, and provide a practical classification output for fraud screening.
+            </p>
+          </article>
+
+          <article class="panel">
+            <h2>7. Model Training</h2>
+            <p>
+              The training flow uses a stratified train/test split with a test fraction of 0.2 and
+              random state 42, as recorded in the project evaluation metadata. The project stores the
+              trained model artifact at <strong>models/random_forest_model.pkl</strong>.
+            </p>
+            <p>
+              The repository also contains evaluation results in <strong>results/model_metrics.json</strong>
+              so project progress and model performance can be reviewed directly.
+            </p>
+          </article>
+
+          <article class="panel">
+            <h2>8. Prediction Process</h2>
+            <div class="workflow" aria-label="Prediction workflow">
+              <div class="flow-step">Transaction Input</div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-step">Data Preprocessing</div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-step">Decision Tree Model</div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-step">Prediction</div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-step">Fraudulent / Legitimate</div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h2>9. Evaluation / Results</h2>
+            <p>
+              The recorded evaluation values in the project metadata are:
+            </p>
+            <ul class="metric-list">
+              <li><span>Accuracy</span><strong>0.99896</strong></li>
+              <li><span>Precision</span><strong>1.00000</strong></li>
+              <li><span>Recall</span><strong>0.23810</strong></li>
+              <li><span>F1 score</span><strong>0.38462</strong></li>
+            </ul>
+            <p>
+              The project documentation explicitly notes that the dataset is imbalanced and that the
+              high accuracy should not be treated as proof of strong fraud recall. Detailed results are
+              kept in the repository for review.
+            </p>
+          </article>
+
+          <article class="panel">
+            <h2>10. Django Application</h2>
+            <p>
+              The repository includes a Django web application for user interaction and model-driven
+              transaction assessment. The application presents a form where users can enter transaction
+              attributes, loads the trained model, and returns a classification outcome alongside a risk
+              signal.
+            </p>
+            <p>
+              This keeps the machine learning backend and the user-facing interface separated, while
+              allowing the project to be reviewed and used in a university demonstration context.
+            </p>
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <p>© <span id="year"></span> Fake Online Transactions Using Decision Trees</p>
+        <a href="./resources.html">Resources</a>
+      </div>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

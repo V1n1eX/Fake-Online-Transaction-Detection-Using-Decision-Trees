@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -91,3 +92,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SECURE_CONTENT_TYPE_NOSNIFF = True
+FRAUD_REVIEW_THRESHOLD = float(os.environ.get('FRAUD_REVIEW_THRESHOLD', '0.5'))
+if not 0 <= FRAUD_REVIEW_THRESHOLD <= 1:
+    raise ValueError('FRAUD_REVIEW_THRESHOLD must be between 0 and 1.')

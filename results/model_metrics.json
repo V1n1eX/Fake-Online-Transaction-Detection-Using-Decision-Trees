@@ -1,0 +1,23 @@
+{
+  "model_name": "Random Forest",
+  "dataset_file": "onlinefraud.csv",
+  "dataset": {
+    "rows": 76927,
+    "labelled_rows": 76926,
+    "fraud_rows": 107,
+    "legitimate_rows": 76819
+  },
+  "evaluation": {
+    "method": "Stratified train/test split",
+    "test_fraction": 0.2,
+    "random_state": 42,
+    "metrics": {
+      "accuracy": 0.9989600935915768,
+      "precision": 1.0,
+      "recall": 0.23809523809523808,
+      "f1_score": 0.38461538461538464
+    }
+  },
+  "feature_count": 10,
+  "score_calibrated": false
+}

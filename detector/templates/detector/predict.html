@@ -1,60 +1,160 @@
 {% extends 'detector/base.html' %}
 
-{% block title %}Transaction Risk Assessment{% endblock %}
-
 {% block content %}
-<section class="card">
-    <h1>Transaction Risk Assessment</h1>
-    <p class="lead">
-        Enter the transaction indicators used by the fraud-detection model. This form is designed to mirror a real-world monitoring workflow for online payment risk analysis.
-    </p>
-
-    {% if error %}
-        <div class="alert">{{ error }}</div>
-    {% endif %}
-
-    <form method="post" novalidate>
-        {% csrf_token %}
-        <div class="form-grid">
-            <div>
-                <label class="label" for="amount">Transaction Amount</label>
-                <input type="number" id="amount" name="amount" step="0.01" value="125.50" required>
-            </div>
-            <div>
-                <label class="label" for="transaction_hour">Transaction Hour</label>
-                <input type="number" id="transaction_hour" name="transaction_hour" min="0" max="23" value="22" required>
-            </div>
-            <div>
-                <label class="label" for="merchant_risk">Merchant Risk Score</label>
-                <input type="number" id="merchant_risk" name="merchant_risk" step="0.01" value="0.72" required>
-            </div>
-            <div>
-                <label class="label" for="device_risk">Device Risk Score</label>
-                <input type="number" id="device_risk" name="device_risk" step="0.01" value="0.34" required>
-            </div>
-            <div>
-                <label class="label" for="location_risk">Location Risk Score</label>
-                <input type="number" id="location_risk" name="location_risk" step="0.01" value="0.68" required>
-            </div>
-            <div>
-                <label class="label" for="customer_tenure_days">Customer Tenure (days)</label>
-                <input type="number" id="customer_tenure_days" name="customer_tenure_days" value="215" required>
-            </div>
-            <div>
-                <label class="label" for="avg_transaction_amount">Average Transaction Amount</label>
-                <input type="number" id="avg_transaction_amount" name="avg_transaction_amount" step="0.01" value="90.00" required>
-            </div>
-            <div>
-                <label class="label" for="ip_risk">IP Risk Score</label>
-                <input type="number" id="ip_risk" name="ip_risk" step="0.01" value="0.58" required>
-            </div>
+<section class="overview-section" id="overview" data-dashboard-section>
+    <div class="section-title-row">
+        <div>
+            <span class="section-kicker">OVERVIEW</span>
+            <h2>Screening activity</h2>
         </div>
+        <span class="dataset-tag"><span class="dataset-dot"></span>PaySim · Random Forest</span>
+    </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn">Run Fraud Check</button>
-            <button type="button" class="btn secondary" id="load-sample">Load Sample Profile</button>
-            <a href="{% url 'home' %}" class="btn warning">Back to Dashboard</a>
+    <div class="metric-grid">
+        <article class="metric-card">
+            <div class="metric-top"><span>Transactions analyzed</span><span class="metric-icon blue-icon" aria-hidden="true">↗</span></div>
+            <strong>{{ stats.total }}</strong>
+            <small>Saved investigations</small>
+        </article>
+        <article class="metric-card">
+            <div class="metric-top"><span>Flagged as suspicious</span><span class="metric-icon red-icon" aria-hidden="true">!</span></div>
+            <strong>{{ stats.suspicious }}</strong>
+            <small>Model classification: fraudulent</small>
+        </article>
+        <article class="metric-card">
+            <div class="metric-top"><span>Classified legitimate</span><span class="metric-icon green-icon" aria-hidden="true">✓</span></div>
+            <strong>{{ stats.legitimate }}</strong>
+            <small>Model classification: legitimate</small>
+        </article>
+        <article class="metric-card">
+            <div class="metric-top"><span>Held-out recall</span><span class="metric-icon violet-icon" aria-hidden="true">◌</span></div>
+            <strong class="metric-recall">{{ stats.recall }}</strong>
+            <small>Fraud cases found in evaluation</small>
+        </article>
+    </div>
+</section>
+
+<section class="screening-workspace" id="screening" data-dashboard-section>
+    <div class="workspace-heading">
+        <div>
+            <span class="section-kicker">NEW INVESTIGATION</span>
+            <h2>Transaction screening</h2>
         </div>
-    </form>
+        <span class="workspace-model"><span class="dataset-dot"></span>{% if model_available %}Ready for analysis{% else %}Model unavailable{% endif %}</span>
+    </div>
+
+    <div class="workspace-grid">
+        <section class="panel screening-panel" aria-labelledby="transaction-form-title">
+            <div class="panel-heading">
+                <div class="panel-heading-icon" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="none"><rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h14M6 12h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div><h3 id="transaction-form-title">Transaction details</h3><p>Enter the fields required by the model.</p></div>
+            </div>
+
+            {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+
+            <form id="transaction-form" class="transaction-form" method="post" action="{% url 'predict' %}#assessment">
+                {% csrf_token %}
+                <fieldset class="field-group">
+                    <legend>Transaction information</legend>
+                    <div class="field-grid">
+                        <div class="field"><label for="amount">Amount</label><input id="amount" name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" value="{{ values.amount|default:'' }}" required></div>
+                        <div class="field"><label for="type">Transaction type</label><select id="type" name="type" required><option value="" disabled {% if not values.type %}selected{% endif %}>Select type</option><option value="CASH_IN" {% if values.type == 'CASH_IN' %}selected{% endif %}>Cash in</option><option value="CASH_OUT" {% if values.type == 'CASH_OUT' %}selected{% endif %}>Cash out</option><option value="DEBIT" {% if values.type == 'DEBIT' %}selected{% endif %}>Debit</option><option value="PAYMENT" {% if values.type == 'PAYMENT' %}selected{% endif %}>Payment</option><option value="TRANSFER" {% if values.type == 'TRANSFER' %}selected{% endif %}>Transfer</option></select></div>
+                        <div class="field"><label for="step">Transaction step</label><input id="step" name="step" type="number" min="1" step="1" inputmode="numeric" placeholder="Step" value="{{ values.step|default:'' }}" required></div>
+                        <div class="field"><label for="isFlaggedFraud">Source-system flag</label><select id="isFlaggedFraud" name="isFlaggedFraud" required><option value="" disabled {% if values.isFlaggedFraud == None or values.isFlaggedFraud == '' %}selected{% endif %}>Select status</option><option value="0" {% if values.isFlaggedFraud == '0' %}selected{% endif %}>Not flagged</option><option value="1" {% if values.isFlaggedFraud == '1' %}selected{% endif %}>Flagged</option></select></div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="field-group balance-group">
+                    <legend>Account balances</legend>
+                    <div class="field-grid">
+                        <div class="field"><label for="nameOrig">Origin account ID</label><input id="nameOrig" name="nameOrig" type="text" autocomplete="off" placeholder="Account identifier" value="{{ values.nameOrig|default:'' }}" required></div>
+                        <div class="field"><label for="nameDest">Destination account ID</label><input id="nameDest" name="nameDest" type="text" autocomplete="off" placeholder="Account identifier" value="{{ values.nameDest|default:'' }}" required></div>
+                        <div class="field"><label for="oldbalanceOrg">Origin balance before</label><input id="oldbalanceOrg" name="oldbalanceOrg" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" value="{{ values.oldbalanceOrg|default:'' }}" required></div>
+                        <div class="field"><label for="newbalanceOrig">Origin balance after</label><input id="newbalanceOrig" name="newbalanceOrig" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" value="{{ values.newbalanceOrig|default:'' }}" required></div>
+                        <div class="field"><label for="oldbalanceDest">Destination balance before</label><input id="oldbalanceDest" name="oldbalanceDest" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" value="{{ values.oldbalanceDest|default:'' }}" required></div>
+                        <div class="field"><label for="newbalanceDest">Destination balance after</label><input id="newbalanceDest" name="newbalanceDest" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" value="{{ values.newbalanceDest|default:'' }}" required></div>
+                    </div>
+                </fieldset>
+
+                <div class="form-footer">
+                    <span>Account IDs are not stored in investigation history.</span>
+                    <button class="analyze-button" type="submit" {% if not model_available %}disabled{% endif %}>
+                        <svg class="button-shield" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.2 16.3 4.8v4.6c0 4-2.5 6.5-6.3 8-3.8-1.5-6.3-4-6.3-8V4.8L10 2.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m7.3 9.8 1.8 1.8 3.7-3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="button-label">Analyze transaction</span>
+                        <span class="button-loading" hidden>Analyzing…</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel assessment-panel" id="assessment" aria-live="polite" aria-labelledby="assessment-title">
+            <div class="assessment-panel-heading">
+                <span class="section-kicker">RISK ASSESSMENT</span>
+                {% if assessment %}<span class="assessment-time">{{ assessment.created_at|date:'M j, Y · H:i' }}</span>{% endif %}
+            </div>
+            {% if assessment %}
+                <div class="assessment-content {% if assessment.category == 'High' %}is-high{% else %}is-low{% endif %}">
+                    <div class="assessment-emblem" aria-hidden="true">{% if assessment.category == 'High' %}!{% else %}✓{% endif %}</div>
+                    <span class="risk-category">{{ assessment.category }} risk · {% if assessment.category == 'High' %}Review{% else %}Below threshold{% endif %}</span>
+                    <h3 id="assessment-title">{% if assessment.label == 'Fraudulent' %}Potential fraud detected{% else %}No fraud signal detected{% endif %}</h3>
+                    <p class="assessment-summary">Model classification: <strong>{{ assessment.label }}</strong></p>
+                    <div class="score-block">
+                        <div class="score-label-row"><span>Model score <span class="score-caveat">(uncalibrated)</span></span><strong>{{ assessment.score_percent }}%</strong></div>
+                        <div class="score-track" role="img" aria-label="Uncalibrated model score {{ assessment.score_percent }} percent, review threshold {{ threshold_percent }}"><div class="score-fill" style="width: {{ assessment.score_percent }}%"></div><span class="threshold-marker" style="left: {{ threshold_percent }}"></span></div>
+                        <div class="threshold-label">Review threshold <span>{{ threshold_percent }}</span></div>
+                    </div>
+                    <div class="transaction-receipt"><span>{{ assessment.transaction_type }} · {{ assessment.amount|floatformat:2 }}</span><span>Analysis #{{ assessment.analysis_id }}</span></div>
+                </div>
+            {% else %}
+                <div class="assessment-empty">
+                    <div class="empty-shield" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 5 39 11v11c0 9.5-6.2 17-15 21-8.8-4-15-11.5-15-21V11L24 5Z" stroke="currentColor" stroke-width="1.6"/><path d="M24 16v9m0 6h.02" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                    <h3 id="assessment-title">{% if model_available %}Ready to assess transaction risk{% else %}Screening model unavailable{% endif %}</h3>
+                    <p>{% if model_available %}Submit transaction details to generate a model-based risk assessment.{% else %}Install the trained model artifact to enable transaction screening.{% endif %}</p>
+                </div>
+            {% endif %}
+            <div class="assessment-footnote"><span class="footnote-dot"></span>Model score is not a calibrated fraud probability.</div>
+        </section>
+    </div>
+</section>
+
+<section class="history-section dashboard-section" id="history" data-dashboard-section>
+    <div class="section-title-row">
+        <div><span class="section-kicker">INVESTIGATIONS</span><h2>Recent screening history</h2></div>
+        <span class="section-count">{{ stats.total }} total</span>
+    </div>
+    <div class="panel history-panel">
+        {% if recent_analyses %}
+            <div class="table-scroll"><table class="history-table">
+                <thead><tr><th>Transaction</th><th>Type</th><th>Amount</th><th>Classification</th><th>Model score</th><th>Time</th></tr></thead>
+                <tbody>{% for item in recent_analyses %}
+                    <tr>
+                        <td class="transaction-ref">#{{ item.id|stringformat:'06d' }}</td>
+                        <td>{{ item.transaction_type_display }}</td>
+                        <td>{{ item.amount|floatformat:2 }}</td>
+                        <td><span class="classification-badge {% if item.prediction == 'Fraudulent' %}badge-fraud{% else %}badge-legitimate{% endif %}"><span></span>{{ item.prediction }}</span></td>
+                        <td>{{ item.score_percent|floatformat:1 }}%</td>
+                        <td class="date-cell">{{ item.created_at|date:'M j, Y · H:i' }}</td>
+                    </tr>
+                {% endfor %}</tbody>
+            </table></div>
+        {% else %}
+            <div class="history-empty"><span class="history-empty-icon" aria-hidden="true">—</span><strong>No investigations yet</strong><span>Completed transaction assessments will appear here.</span></div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="model-section dashboard-section" id="model-info" data-dashboard-section>
+    <div class="section-title-row">
+        <div><span class="section-kicker">MODEL DETAILS</span><h2>Model information</h2></div>
+    </div>
+    <div class="model-info-grid">
+        <article class="panel model-detail"><span>Model</span><strong>{{ model_metadata.model_name|default:'Random Forest' }}</strong><small>Trained fraud classifier</small></article>
+        <article class="panel model-detail"><span>Training dataset</span><strong>{{ model_metadata.dataset_file|default:'onlinefraud.csv' }}</strong><small>{{ model_metadata.dataset.labelled_rows|default:'—' }} labelled rows · {{ features_count }} model features</small></article>
+        <article class="panel model-detail"><span>Evaluation</span><strong>{{ model_metadata.evaluation.method|default:'Unavailable' }}</strong><small>Recall uses a held-out dataset split</small></article>
+        <article class="panel model-detail"><span>High-risk threshold</span><strong>{{ threshold_percent }}</strong><small>Set with FRAUD_REVIEW_THRESHOLD</small></article>
+    </div>
+    <p class="model-caveat">The displayed score comes from the classifier and is not calibrated. The high-risk category is derived from the configurable threshold; the prediction label is shown separately.</p>
 </section>
 {% endblock %}
